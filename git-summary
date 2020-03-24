@@ -38,6 +38,9 @@ usage() {
                 unpulled commits.  As this can be time consuming, this
                 flag lets you skip that.
 
+          -q    Quiet for repos that are up to date. Also print
+                a final tally.
+
           path  Path to folder containing git repos; if omitted, the
                 current working directory is used.
 
@@ -49,10 +52,12 @@ git_summary() {
 
     local local_only=0
     local opt
-    while getopts "hl" opt; do
+    local quiet=0
+    while getopts "hlq" opt; do
         case "${opt}" in
             h) usage ; exit 1 ;;
             l) local_only=1 ;;    # Will skip "git fetch"
+            q) quiet=1 ;;
         esac
     done
     shift $((OPTIND-1))
@@ -80,13 +85,18 @@ git_summary() {
 
     print_header "$template" $max_repo_len $max_branch_len
 
+    local repo_count=0
     local f
     local here=`pwd`
     for f in $repos ; do
         cd $target/$f
-        summarise_one_git_repo "$template" "$local_only" >&1
+        summarise_one_git_repo "$template" "$local_only" "$quiet" >&1
+        (( repo_count+=1 ))
     done
     cd $here
+    if [ $quiet -eq 1 ]; then
+        echo "Checked ${repo_count} repositories."
+    fi
 }
 
 
@@ -110,6 +120,7 @@ summarise_one_git_repo () {
 
     local template=$1
     local local_only=$2
+    local quiet=$3
 
     local app_name=`basename $(pwd)`
     local branch_name=`git symbolic-ref HEAD | sed -e "s/^refs\/heads\///"`
