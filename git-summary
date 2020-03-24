@@ -160,7 +160,7 @@ list_repos () {
 	
 	for i in ${git_directories[*]}; do
 		if [[ ! -z $i ]]; then
-    		dirname -z $i | xargs -0 -L1 basename
+    		dirname -z $i | xargs -0 -L1 basename | egrep -v '^\.nvm$'
     	fi
     done
 }
