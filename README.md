@@ -1,6 +1,9 @@
 # git-summary
 Checks what repos has been changed in your workspace.
 
+Copied from GitLab:
+https://gitlab.com/lordadamson/git-summary
+
 # Install
 * `sudo apt install gawk` (find the alternative command if you're not using ubuntu)
 * `sudo cp git-summary /usr/local/bin`
